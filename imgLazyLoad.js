@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {throttle} from './util';
+import {throttle, getElementTop} from './util';
 const _height = window.innerHeight || window.screen.availHeight;
 
 class ImgLazyLoad extends Component {
@@ -9,18 +9,18 @@ class ImgLazyLoad extends Component {
         this._img = null;
         this.complete = false;
         this.state = {
-            complete: false
+            loaded: false
         }
     }
 
     componentDidMount() {
         this.checkImgs();
-        $(window).scroll(throttle(this.checkImgs.bind(this), 300))
+        window.addEventListener('scroll', throttle(this.checkImgs.bind(this), 300), false);
     }
 
     inViewPort() {
         let {offsetTop} = this.props;
-        let top = $(ReactDOM.findDOMNode(this._img)).offset().top;
+        let top = getElementTop(ReactDOM.findDOMNode(this._img));
         let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
         return top - scrollTop + offsetTop >= 0 && top - scrollTop < (_height + offsetTop);
     }
